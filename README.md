@@ -1,116 +1,85 @@
-# Aplikasi Grafika Komputer 2D
-**Mata Kuliah Grafika Komputer — Semester Genap 2024/2025**
-Dosen: Herry Sofyan, S.T., M.Kom.
+# Aplikasi Grafika Komputer 2D - Kelompok 7 IF-A
+**Proyek Tugas Besar Mata Kuliah Grafika Komputer — Semester Genap 2024/2025**
+Dosen Pengampu: **Herry Sofyan, S.T., M.Kom.**
+
+---
+
+## Deskripsi Proyek
+Aplikasi ini adalah perangkat lunak grafika komputer 2D interaktif yang dibangun menggunakan Python dan Tkinter. Fokus utama aplikasi ini adalah mendemonstrasikan implementasi algoritma grafika komputer dasar seperti **Rasterisasi Manual (Bresenham & Scanline Fill)** dan **Transformasi Geometri 2D** menggunakan matriks homogen 3x3.
+
+### Fitur Utama:
+- **Objek Primitif**: Mendukung pembuatan Persegi Panjang, Persegi, Segitiga, Lingkaran, dan Elips.
+- **Rendering Manual**: 
+  - Garis tepi menggunakan **Algoritma Bresenham**.
+  - Pengisian warna menggunakan **Algoritma Scanline Fill**.
+- **Transformasi Geometri 2D**:
+  - **Translasi**: Pergeseran posisi (tx, ty).
+  - **Rotasi**: Pemutaran objek terhadap titik pusat (centroid).
+  - **Scaling**: Perubahan ukuran objek (sx, sy).
+  - **Refleksi**: Pencerminan terhadap sumbu X dan Y.
+  - **Shear**: Kemiringan objek pada sumbu X dan Y.
+- **Transformasi Kumulatif**: Memungkinkan kombinasi beberapa transformasi sekaligus tanpa merusak bentuk dasar.
+- **UI Modern**: Antarmuka pengguna dengan tema terang (*Light Mode*) yang bersih dan intuitif.
 
 ---
 
 ## Cara Menjalankan
 
+### Prasyarat
+- Python 3.8 ke atas
+- NumPy (`pip install numpy`)
+
+### Instalasi & Eksekusi
 ```bash
-# 1. Pastikan Python 3.8+ terinstall
-python --version
+# 1. Clone repositori ini
+git clone git@github.com:AmnanBK/grafkom-kel-7-if-a.git
+cd grafkom-kel-7-if-a
 
-# 2. Install NumPy jika belum ada
-pip install numpy
-
-# 3. Jalankan aplikasi
-cd grafika2d
+# 2. Jalankan aplikasi
 python main.py
 ```
-
-> **Catatan**: Tkinter sudah termasuk dalam instalasi Python standar di Windows dan macOS. Di Linux, install dengan: `sudo apt install python3-tk`
 
 ---
 
 ## Struktur Proyek
-
-```
-grafika2d/
-├── main.py                    ← Entry point
-├── app.py                     ← Controller utama (MVC)
-├── shapes/
-│   ├── base_shape.py          ← Abstract class
-│   ├── rectangle.py           ← Persegi Panjang & Persegi
-│   └── shapes.py              ← Segitiga, Lingkaran, Elips
-├── transform/
-│   ├── matrix2d.py            ← Matriks transformasi 2D (INTI AKADEMIK)
-│   └── transform_state.py     ← State kumulatif transformasi
-└── ui/
-    ├── canvas_view.py          ← Rendering ke Tkinter Canvas
-    └── control_panel.py        ← Panel kontrol UI
+```text
+.
+├── main.py                    # Entry point aplikasi
+├── app.py                     # Controller utama (logika aplikasi)
+├── shapes/                    # Modul pendefinisian objek geometris
+│   ├── base_shape.py          # Abstract base class untuk semua shape
+│   ├── rectangle.py           # Implementasi Persegi & Persegi Panjang
+│   └── shapes.py              # Implementasi Segitiga, Lingkaran, & Elips
+├── transform/                 # Modul logika matematika
+│   ├── matrix2d.py            # Konstruksi matriks transformasi 3x3
+│   └── transform_state.py     # Pengelolaan state transformasi kumulatif
+└── ui/                        # Modul antarmuka pengguna
+    ├── canvas_view.py         # Logika rendering manual (Bresenham & Scanline)
+    └── control_panel.py       # Panel kontrol input & tombol
 ```
 
 ---
 
-## Konsep Grafika Komputer yang Diimplementasikan
+## Konsep Akademik yang Diimplementasikan
 
-### Koordinat Homogen
-Setiap titik dinyatakan dalam vektor homogen `[x, y, 1]^T`.
-Semua transformasi menggunakan matriks 3×3.
+### 1. Koordinat Homogen
+Setiap titik (vertex) dinyatakan dalam vektor `[x, y, 1]^T` untuk memungkinkan operasi translasi dilakukan melalui perkalian matriks.
 
-### Matriks Transformasi (dari materi dosen)
+### 2. Matriks Transformasi
+Semua manipulasi objek menggunakan perkalian matriks 3x3:
+- **Rotasi & Scaling**: Dilakukan terhadap titik pusat objek (*centroid*) menggunakan transformasi komposit: $M = T(x_c, y_c) \cdot R(\theta) \cdot T(-x_c, -y_c)$.
 
-| Transformasi | Matriks 3×3 |
-|---|---|
-| Translasi | `[[1,0,tx],[0,1,ty],[0,0,1]]` |
-| Scaling | `[[sx,0,0],[0,sy,0],[0,0,1]]` |
-| Rotasi | `[[cosθ,-sinθ,0],[sinθ,cosθ,0],[0,0,1]]` |
-| Refleksi X | `[[1,0,0],[0,-1,0],[0,0,1]]` |
-| Refleksi Y | `[[-1,0,0],[0,1,0],[0,0,1]]` |
-| Shear | `[[1,shx,0],[shy,1,0],[0,0,1]]` |
-
-### Transformasi Komposit
-Rotasi dan scaling terhadap pivot point menggunakan komposit:
-```
-M = T(xp,yp) · R(θ) · T(-xp,-yp)
-```
-Perkalian dari kanan ke kiri (sesuai materi dosen).
-
-### Sistem Koordinat
-Canvas Tkinter menggunakan koordinat layar (Y ke bawah).
-Rotasi θ positif = searah jarum jam di canvas.
-Hal ini harus dijelaskan dalam laporan BAB III.
+### 3. Rasterisasi Manual
+Berbeda dengan aplikasi GUI standar yang menggunakan fungsi bawaan, aplikasi ini mengimplementasikan:
+- **Bresenham Line Algorithm**: Untuk menggambar garis tepi (outline) pixel demi pixel.
+- **Scanline Fill Algorithm**: Untuk mengisi area dalam poligon dengan memproses setiap baris scanline secara manual.
 
 ---
 
-## Fitur Transformasi
-
-| Fitur | Status | Keterangan |
-|---|---|---|
-| Translasi | ✅ Wajib | Input tx, ty dalam pixel |
-| Scaling | ✅ Wajib | Input sx, sy (misal: 1.5 = 150%) |
-| Rotasi | ✅ Wajib | Input θ dalam derajat, pivot = centroid |
-| Refleksi X/Y | ✅ Opsional | Tombol toggle |
-| Shear | ✅ Opsional | Input shx, shy |
-
-Semua transformasi bersifat **kumulatif**.
+## Anggota Kelompok 7 (IF-A)
+- [Nama Anggota 1]
+- [Nama Anggota 2]
+- [Nama Anggota 3]
 
 ---
-
-## Catatan untuk Laporan
-
-### BAB I — Teori Dasar
-Referensikan `transform/matrix2d.py` untuk penjelasan matriks.
-Setiap fungsi dilengkapi docstring yang menjelaskan rumus dari materi dosen.
-
-### BAB II — Perancangan Aplikasi
-Gunakan struktur folder dan diagram class sebagai perancangan menu dan antar muka.
-
-### BAB III — Implementasi Program
-- **Perangkat keras**: Spesifikasi komputer yang digunakan
-- **Perangkat lunak**: Python 3.x, Tkinter, NumPy
-- **Tampilan**: Screenshot aplikasi
-- **Modul**: Jelaskan fungsi setiap file `.py`
-
----
-
-## Cara Presentasi
-
-1. Buka aplikasi → pilih objek (misal: Segitiga)
-2. Tunjukkan mode Fill vs Outline
-3. Lakukan Translasi → jelaskan matriks di matrix2d.py
-4. Lakukan Rotasi → tunjukkan centroid marker (titik merah)
-5. Lakukan Scaling → tunjukkan objek membesar/mengecil
-6. Lakukan Reset → tunjukkan objek kembali ke posisi asal
-7. Tunjukkan kumulatif: rotasi 30° × 3 = 90° total
-8. (Opsional) Tunjukkan Refleksi dan Shear
+*Dibuat untuk memenuhi persyaratan kelulusan mata kuliah Grafika Komputer 2025.*
