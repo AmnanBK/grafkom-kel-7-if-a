@@ -168,7 +168,7 @@ class App:
             canvas_cx=cx,
             canvas_cy=cy,
             fill_mode=self.current_fill_mode,
-            color=self.fill_color,
+            fill_color=self.fill_color,
             outline_color=self.outline_color,
         )
 
@@ -198,7 +198,7 @@ class App:
         if is_fill_mode:
             self.fill_color = color
             if self.active_shape:
-                self.active_shape.set_color(color)
+                self.active_shape.set_fill_color(color)
         else:
             self.outline_color = color
             if self.active_shape:
