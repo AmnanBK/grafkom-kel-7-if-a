@@ -40,7 +40,7 @@ class BaseShape(ABC):
         canvas_cx: float,
         canvas_cy: float,
         fill_mode: bool = True,
-        color: str = "#4A90D9",
+        fill_color: str = "#4A90D9",
         outline_color: str = "#1A3A5C",
         outline_width: int = 2,
     ):
@@ -56,7 +56,7 @@ class BaseShape(ABC):
             outline_width: Ketebalan garis tepi
         """
         self.fill_mode    = fill_mode
-        self.color        = color
+        self.fill_color        = fill_color
         self.outline_color = outline_color
         self.outline_width = outline_width
         self.transform_state = TransformState()
@@ -143,9 +143,9 @@ class BaseShape(ABC):
         """Ubah mode render: True = fill, False = outline."""
         self.fill_mode = fill_mode
 
-    def set_color(self, color: str):
+    def set_fill_color(self, fill_color: str):
         """Ubah warna fill objek."""
-        self.color = color
+        self.fill_color = fill_color
 
     def set_outline_color(self, color: str):
         """Ubah warna garis tepi."""
@@ -164,7 +164,7 @@ class BaseShape(ABC):
         """
         return {
             'vertices'      : self.get_current_vertices(),
-            'fill'          : self.color if self.fill_mode else '',
+            'fill'          : self.fill_color if self.fill_mode else '',
             'outline'       : self.outline_color,
             'width'         : self.outline_width,
             'fill_mode'     : self.fill_mode,

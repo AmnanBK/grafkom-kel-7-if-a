@@ -69,7 +69,8 @@ class App:
         # State aktif
         self.active_shape = None
         self.current_fill_mode = True
-        self.current_color = "#0056b3"
+        self.fill_color = "#4A90D9"
+        self.outline_color = "#1A3A5C"
 
         # Buat frame utama (canvas di kanan, panel kiri, panel bawah)
         self.main_frame = tk.Frame(root, bg=BG_ROOT)
@@ -167,7 +168,8 @@ class App:
             canvas_cx=cx,
             canvas_cy=cy,
             fill_mode=self.current_fill_mode,
-            color=self.current_color,
+            fill_color=self.fill_color,
+            outline_color=self.outline_color,
         )
 
         # Render ke canvas
@@ -185,17 +187,24 @@ class App:
             self.active_shape.set_fill_mode(fill_mode)
             self._render()
 
-    def on_color_changed(self, color: str):
+    def on_color_changed(self, color: str, is_fill_mode: bool):
         """
         Dipanggil ketika user memilih warna baru.
 
         Args:
             color: Kode warna hex (misal '#FF5733')
+            is_fill_mode: True jika mode Fill aktif, False jika Outline aktif
         """
-        self.current_color = color
-        if self.active_shape:
-            self.active_shape.set_color(color)
-            self._render()
+        if is_fill_mode:
+            self.fill_color = color
+            if self.active_shape:
+                self.active_shape.set_fill_color(color)
+        else:
+            self.outline_color = color
+            if self.active_shape:
+                self.active_shape.set_outline_color(color)
+        
+        self._render()
 
     def on_transform_applied(self, params: dict):
         """

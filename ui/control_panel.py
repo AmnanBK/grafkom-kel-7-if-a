@@ -68,7 +68,8 @@ class ControlPanel:
         """
         self.root      = root
         self.callbacks = callbacks
-        self.current_color = "#0056b3"
+        self.current_fill_color = "#4A90D9"
+        self.current_outline_color = "#1A3A5C"
 
         # State pilihan aktif
         self._selected_shape = tk.StringVar(value="")
@@ -166,9 +167,19 @@ class ControlPanel:
         if fill_mode:
             self._btn_fill.configure(bg=BG_BTN_ACTIVE, fg="#FFFFFF")
             self._btn_outline.configure(bg=BG_BTN, fg=FG_TEXT)
+            # Update preview ke warna fill saat ini
+            self._color_preview.configure(
+                bg=self.current_fill_color,
+                text=f"  {self.current_fill_color}  ",
+            )
         else:
             self._btn_fill.configure(bg=BG_BTN, fg=FG_TEXT)
             self._btn_outline.configure(bg=BG_BTN_ACTIVE, fg="#FFFFFF")
+            # Update preview ke warna outline saat ini
+            self._color_preview.configure(
+                bg=self.current_outline_color,
+                text=f"  {self.current_outline_color}  ",
+            )
         if 'on_fill_mode' in self.callbacks:
             self.callbacks['on_fill_mode'](fill_mode)
 
@@ -182,8 +193,8 @@ class ControlPanel:
 
         self._color_preview = tk.Label(
             frame,
-            text=f"  {self.current_color}  ",
-            bg=self.current_color,
+            text=f"  {self.current_fill_color}  ",
+            bg=self.current_fill_color,
             fg="#FFFFFF",
             font=FONT_LABEL,
             relief=tk.FLAT,
@@ -208,19 +219,32 @@ class ControlPanel:
 
     def _on_color_pick(self):
         """Buka dialog color picker."""
+        # Tentukan warna awal berdasarkan mode aktif
+        current_color = self.current_fill_color if self._fill_mode.get() else self.current_outline_color
+        
         color_code = colorchooser.askcolor(
             title="Pilih Warna Objek",
-            color=self.current_color,
+            color=current_color,
             parent=self.root,
         )
         if color_code and color_code[1]:
-            self.current_color = color_code[1]
+            new_color = color_code[1]
+            
+            # Simpan ke variabel yang sesuai dengan mode aktif
+            if self._fill_mode.get():
+                self.current_fill_color = new_color
+            else:
+                self.current_outline_color = new_color
+            
+            # Update preview
             self._color_preview.configure(
-                bg=self.current_color,
-                text=f"  {self.current_color}  ",
+                bg=new_color,
+                text=f"  {new_color}  ",
             )
+            
+            # Panggil callback dengan mode info
             if 'on_color' in self.callbacks:
-                self.callbacks['on_color'](self.current_color)
+                self.callbacks['on_color'](new_color, self._fill_mode.get())
 
     # ─────────────────────────────────────────────────────────────────
     # PANEL KIRI — TOMBOL RESET
